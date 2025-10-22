@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling>=1.21.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sudokutrainer"
+version = "0.1.0"
+description = "Text-based Sudoku trainer with generator, solver, and human-style hints."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Milenkhov" }]
+dependencies = [
+  "typer>=0.12.3",
+  "rich>=13.7.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.3",
+  "pytest-cov>=5.0.0",
+  "ruff>=0.6.8",
+  "black>=24.10.0",
+  "mypy>=1.11.2",
+  "pre-commit>=3.8.0",
+]
+
+[project.scripts]
+sudoku = "sudokutrainer.cli:app"
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+lint.select = ["E", "F", "I", "B", "UP"]
+lint.ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_configs = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+ignore_missing_imports = true
+strict_optional = true
+
+[tool.pytest.ini_options]
+addopts = "-q --cov=sudokutrainer --cov-report=term-missing"
+testpaths = ["tests"]
