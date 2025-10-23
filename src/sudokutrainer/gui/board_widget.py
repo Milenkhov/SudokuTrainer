@@ -123,7 +123,8 @@ class BoardWidget(QTableWidget):
         painter = QPainter(self.viewport())
         color = QColor("#101010") if not self._is_dark() else QColor("#cfd3d7")
         thin = QPen(color, 1)
-        thick = QPen(color, 3)
+        thick = QPen(color, 3)  # 3x3 box boundaries
+        outer = QPen(color, 4)  # outer border for stronger emphasis
 
         # Compute boundaries
         xs = [0]
@@ -138,9 +139,15 @@ class BoardWidget(QTableWidget):
             ys.append(y)
 
         for i, xx in enumerate(xs):
-            painter.setPen(thick if i % 3 == 0 or i == 9 else thin)
+            if i == 0 or i == 9:
+                painter.setPen(outer)
+            else:
+                painter.setPen(thick if i % 3 == 0 else thin)
             painter.drawLine(xx, 0, xx, ys[-1])
         for j, yy in enumerate(ys):
-            painter.setPen(thick if j % 3 == 0 or j == 9 else thin)
+            if j == 0 or j == 9:
+                painter.setPen(outer)
+            else:
+                painter.setPen(thick if j % 3 == 0 else thin)
             painter.drawLine(0, yy, xs[-1], yy)
         painter.end()

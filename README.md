@@ -7,6 +7,9 @@ Highlights:
 - Generator with uniqueness guarantee and difficulty targeting
 - Human-style hints: Naked/Hidden Single, Naked Pair, eliminations
 - New: Check button to highlight correct/incorrect entries
+- New: Thick 3×3 grid lines for better readability (like a classic Sudoku)
+- New: View > Show Coordinates toggle (x,y) headers on/off
+- New: Non-blocking “New” (async generation) so the UI stays responsive
 
 ## Download and run (Windows)
 
@@ -22,9 +25,18 @@ Highlights:
 
 - New: Choose difficulty and click "New" to generate a puzzle.
 - Type digits 1–9 into empty cells. You can make mistakes; the app won't block invalid entries.
+- View > Show Coordinates: Toggle row/column headers if you find them distracting.
 - Hint: Shows a logical hint when the board has no conflicts.
 - Check: Colors entries you added: green if correct, red if incorrect. Use it any time to assess progress.
 - Solve: Fills in the solution if you want to see the completed grid.
+
+### Quick rules (How to play)
+
+- Each row must contain digits 1–9 exactly once.
+- Each column must contain digits 1–9 exactly once.
+- Each 3×3 box must contain digits 1–9 exactly once.
+
+Tips: Start with singles, use Check to assess progress, and ask for a Hint when there are no conflicts.
 
 Note on Python 3.14 for developers: PySide6/PyInstaller availability may lag. The project gates GUI deps on Python < 3.14; use Python 3.11/3.12 for development and packaging.
 

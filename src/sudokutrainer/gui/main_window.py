@@ -118,6 +118,9 @@ class MainWindow(QMainWindow):
         help_menu = self.menuBar().addMenu("&Help")
         act_about = help_menu.addAction("About")
         act_about.triggered.connect(self._about)  # type: ignore[attr-defined]
+        help_menu.addSeparator()
+        act_rules = help_menu.addAction("How to Play Sudoku")
+        act_rules.triggered.connect(self._rules)  # type: ignore[attr-defined]
 
     def _refresh(self) -> None:
         self.board_widget.set_board(self.service.board, self.service.givens)
@@ -217,6 +220,19 @@ class MainWindow(QMainWindow):
             "About SudokuTrainer",
             "SudokuTrainer 0.2.0\nAuthor: Milenkhov\nLicense: MIT\nRepo: https://github.com/Milenkhov/SudokuTrainer",
         )
+
+    def _rules(self) -> None:
+        text = (
+            "Sudoku rules (quick):\n\n"
+            "- Fill the grid so each row has digits 1–9 exactly once.\n"
+            "- Each column must also contain digits 1–9 exactly once.\n"
+            "- Each 3×3 box must contain digits 1–9 exactly once.\n\n"
+            "Tips:\n"
+            "- Start with singles (only place a number can go).\n"
+            "- Use Check to highlight correct/incorrect entries.\n"
+            "- Use Hint when there are no conflicts to get a logical step.\n"
+        )
+        QMessageBox.information(self, "How to Play", text)
 
     def _check(self) -> None:
         # Clear any previous highlights

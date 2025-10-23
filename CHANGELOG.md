@@ -3,6 +3,25 @@
 All notable changes to this project will be documented here.
 
 ## [0.2.3] - 2025-10-23
+## [0.2.4] - 2025-10-23
+### Added
+- Check button now highlights correct (green) and incorrect (red) user entries.
+- Thick 3×3 grid lines and thicker outer border for improved readability and accessibility.
+- View > Show Coordinates toggle to show/hide row/column headers.
+- Help > How to Play Sudoku: quick, friendly rules dialog in-app.
+
+### Changed
+- New puzzle generation is now asynchronous to keep the UI responsive; status message and busy cursor indicate progress.
+- Improved dark theme colors for better contrast of text, headers, and buttons.
+- Polished light theme styling for consistency.
+
+### Fixes
+- Block hints while conflicts are present to avoid misleading suggestions.
+- Minor layout and styling adjustments across themes.
+
+### Packaging
+- Windows one-file EXE build produced via PyInstaller; zip build remains available as fallback.
+
 ### Fixed
 - Windows executable failed to start due to relative import in `__main__`. Switched to absolute import to work under PyInstaller.
 
