@@ -138,6 +138,17 @@ def tutorial() -> None:
     console.print("- Then look for Pairs and simple eliminations.")
 
 
+@app.command("gui")
+def gui() -> None:  # pragma: no cover
+    """Launch the GUI application."""
+    try:
+        from .app import main
+    except Exception as exc:
+        console.print(f"GUI unavailable: {exc}")
+        raise typer.Exit(code=1) from None
+    raise SystemExit(main())
+
+
 if __name__ == "__main__":
     # Allow running via: python -m sudokutrainer.cli [COMMAND]
     app()

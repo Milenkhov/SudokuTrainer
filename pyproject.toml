@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sudokutrainer"
-version = "0.1.0"
+version = "0.2.0"
 description = "Text-based Sudoku trainer with generator, solver, and human-style hints."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -13,6 +13,9 @@ authors = [{ name = "Milenkhov" }]
 dependencies = [
   "typer>=0.12.3",
   "rich>=13.7.1",
+  # PySide6 is not yet available on Python 3.14 at the time of writing.
+  # Use an environment marker so local installs on 3.14 don't fail; CI builds use 3.11.
+  "pyside6>=6.7; python_version < \"3.14\"",
 ]
 
 [project.optional-dependencies]
@@ -23,6 +26,8 @@ dev = [
   "black>=24.10.0",
   "mypy>=1.11.2",
   "pre-commit>=3.8.0",
+  # PyInstaller also lacks Python 3.14 wheels currently; gate similarly.
+  "pyinstaller>=6.10.0; python_version < \"3.14\"",
 ]
 
 [project.scripts]
