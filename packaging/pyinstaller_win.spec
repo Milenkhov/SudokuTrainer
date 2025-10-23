@@ -1,14 +1,15 @@
-# Minimal spec to bundle GUI; run: pyinstaller --clean -y packaging/pyinstaller_win.spec
-from PyInstaller.utils.hooks import collect_submodules
+# Bundle GUI with PySide6; run: pyinstaller --clean -y packaging/pyinstaller_win.spec
+from PyInstaller.utils.hooks import collect_submodules, collect_data_files
 
-hidden = collect_submodules("sudokutrainer")
+hidden = collect_submodules("sudokutrainer") + collect_submodules("PySide6")
+datas = collect_data_files("PySide6")
 
 block_cipher = None
 a = Analysis(
     ["src/sudokutrainer/__main__.py"],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=datas,
     hiddenimports=hidden,
     hookspath=[],
     runtime_hooks=[],
