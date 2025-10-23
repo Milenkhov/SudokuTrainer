@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QKeyEvent
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QWidget
 
 from ..core.board import Board
@@ -39,7 +40,7 @@ class BoardWidget(QTableWidget):
                 it.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
         self.viewport().update()
 
-    def keyPressEvent(self, event) -> None:  # type: ignore[override]
+    def keyPressEvent(self, event: QKeyEvent) -> None:  # type: ignore[override]
         idx = self.currentIndex()
         r, c = idx.row(), idx.column()
         if r < 0 or c < 0:
