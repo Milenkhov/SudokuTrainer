@@ -56,34 +56,16 @@ Note on Python 3.14 for developers: PySide6/PyInstaller availability may lag. Th
 
 ## Verify downloads (SHA256)
 
-To verify your download's integrity, compare its SHA256 hash against the official checksum files attached to the release.
+Verifying your download protects you from corruption or tampering. It’s simple:
+
+- Download the app and the matching “.sha256.txt” file from the same release.
+- Open the “.sha256.txt” file and note the long SHA256 value next to the filename.
+- Use any checksum tool to compute the SHA256 of your downloaded file.
+- The two values must match exactly. If they don’t, re‑download from the release page.
 
 Checksum files for v0.2.4:
 - EXE SHA256: https://github.com/Milenkhov/SudokuTrainer/releases/download/v0.2.4/SudokuTrainer.exe.sha256.txt
 - ZIP SHA256: https://github.com/Milenkhov/SudokuTrainer/releases/download/v0.2.4/SudokuTrainer-0.2.4-Windows-x64.zip.sha256.txt
-
-Windows PowerShell example:
-
-```
-# From the folder where you downloaded the files
-Get-FileHash -Algorithm SHA256 .\SudokuTrainer.exe
-Get-FileHash -Algorithm SHA256 .\SudokuTrainer-0.2.4-Windows-x64.zip
-
-# Compare each output Hash to the line for the same filename in the .sha256.txt file
-# (Two spaces separate the hash and filename in the checksum file.)
-```
-
-Optional: quick boolean checks for both files at once
-
-```
-$checks = Get-Content .\SudokuTrainer-0.2.4-Windows-x64.zip.sha256.txt
-$files  = 'SudokuTrainer.exe','SudokuTrainer-0.2.4-Windows-x64.zip'
-$files | ForEach-Object {
-	$expected = ($checks | Where-Object { $_ -match ("  " + [regex]::Escape($_) + '$') }) -replace '\\s\\s.*$',''
-	$actual   = (Get-FileHash -Algorithm SHA256 $_).Hash
-	'{0}: {1}' -f $_, ($actual -eq $expected)
-}
-```
 
 ## Development
 
