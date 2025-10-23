@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtWidgets import (
     QComboBox,
     QFileDialog,
@@ -26,6 +27,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("SudokuTrainer")
         self.service = GameService()
+        self._gen_thread: QThread | None = None
+        self._show_coords = True
         self._build_ui()
         self._apply_theme("light")
         self._new_puzzle()
@@ -49,6 +52,10 @@ class MainWindow(QMainWindow):
         btn_hint = QPushButton("Hint")
         btn_hint.clicked.connect(self._hint)  # type: ignore[attr-defined]
         tb.addWidget(btn_hint)
+
+        btn_check = QPushButton("Check")
+        btn_check.clicked.connect(self._check)  # type: ignore[attr-defined]
+        tb.addWidget(btn_check)
 
         btn_solve = QPushButton("Solve")
         btn_solve.clicked.connect(self._solve)  # type: ignore[attr-defined]
@@ -94,27 +101,66 @@ class MainWindow(QMainWindow):
         game_menu = self.menuBar().addMenu("&Game")
         act_hint = game_menu.addAction("Hint")
         act_hint.triggered.connect(self._hint)  # type: ignore[attr-defined]
+        act_check = game_menu.addAction("Check")
+        act_check.triggered.connect(self._check)  # type: ignore[attr-defined]
         act_solve = game_menu.addAction("Solve")
         act_solve.triggered.connect(self._solve)  # type: ignore[attr-defined]
 
         view_menu = self.menuBar().addMenu("&View")
         act_theme = view_menu.addAction("Toggle Theme")
         act_theme.triggered.connect(self._toggle_theme)  # type: ignore[attr-defined]
+        view_menu.addSeparator()
+        self.act_coords = view_menu.addAction("Show Coordinates")
+        self.act_coords.setCheckable(True)
+        self.act_coords.setChecked(True)
+        self.act_coords.toggled.connect(self._toggle_coords)  # type: ignore[attr-defined]
 
         help_menu = self.menuBar().addMenu("&Help")
         act_about = help_menu.addAction("About")
         act_about.triggered.connect(self._about)  # type: ignore[attr-defined]
 
     def _refresh(self) -> None:
-        self.board_widget.set_board(self.service.board)
+        self.board_widget.set_board(self.service.board, self.service.givens)
+        self.board_widget.set_show_coords(self._show_coords)
         msg = "Complete!" if self.service.is_complete() else ""
         self.status_info.setText(msg)
 
     def _new_puzzle(self) -> None:
-        self.service.new_puzzle(self.level_combo.currentText())
-        self._refresh()
+        # Generate asynchronously to keep UI responsive
+        level = self.level_combo.currentText()
+
+        class GenerateWorker(QThread):
+            done = Signal(object)
+
+            def __init__(self, lvl: str):
+                super().__init__()
+                self.lvl = lvl
+
+            def run(self) -> None:  # type: ignore[override]
+                from ..generator.generator import generate
+
+                b, _rated = generate(self.lvl)
+                self.done.emit(b)
+
+        # Prevent multiple concurrent generations
+        if self._gen_thread is not None:
+            return
+        self.statusBar().showMessage("Generating puzzle…")
+        self.setCursor(Qt.WaitCursor)
+        self._set_controls_enabled(False)
+        self._gen_thread = GenerateWorker(level)
+        self._gen_thread.done.connect(self._on_generated)  # type: ignore[attr-defined]
+        self._gen_thread.finished.connect(self._on_generation_finished)  # type: ignore[attr-defined]
+        self._gen_thread.start()
 
     def _hint(self) -> None:
+        if self.service.has_conflicts():
+            QMessageBox.warning(
+                self,
+                "Conflicts detected",
+                "There are conflicting numbers on the board. Please correct them (use Check) before requesting a hint.",
+            )
+            return
         h = self.service.get_hint()
         if not h:
             QMessageBox.information(self, "Hint", "No logical hint found.")
@@ -148,9 +194,9 @@ class MainWindow(QMainWindow):
 
     def _on_cell_edited(self, r: int, c: int, v: int) -> None:
         if not self.service.set_cell(r, c, v):
-            self._refresh()
-        else:
-            self._refresh()
+            # Ignore edits on givens
+            return
+        self._refresh()
 
     def _on_level_changed(self, level: str) -> None:
         self.service.level = level
@@ -162,6 +208,8 @@ class MainWindow(QMainWindow):
     def _apply_theme(self, theme: str) -> None:
         self.setProperty("theme", theme)
         self.setStyleSheet(STYLE_DARK if theme == "dark" else STYLE_LIGHT)
+        # Re-style cells to adapt to theme immediately
+        self._refresh()
 
     def _about(self) -> None:
         QMessageBox.about(
@@ -169,3 +217,31 @@ class MainWindow(QMainWindow):
             "About SudokuTrainer",
             "SudokuTrainer 0.2.0\nAuthor: Milenkhov\nLicense: MIT\nRepo: https://github.com/Milenkhov/SudokuTrainer",
         )
+
+    def _check(self) -> None:
+        # Clear any previous highlights
+        self.board_widget.clear_highlights()
+        correct, wrong = self.service.compare_with_solution()
+        self.board_widget.highlight_results(correct, wrong)
+        self.status_info.setText(f"Correct: {len(correct)}  Wrong: {len(wrong)}")
+
+    def _toggle_coords(self, checked: bool) -> None:
+        self._show_coords = checked
+        self.board_widget.set_show_coords(checked)
+
+    def _set_controls_enabled(self, enabled: bool) -> None:
+        for btn in self.findChildren(QPushButton):
+            btn.setEnabled(enabled)
+        self.level_combo.setEnabled(enabled)
+
+    def _on_generated(self, board) -> None:
+        # Adopt generated board and refresh
+        self.service.adopt_puzzle(board)
+        self.board_widget.clear_highlights()
+        self._refresh()
+
+    def _on_generation_finished(self) -> None:
+        self.statusBar().clearMessage()
+        self.unsetCursor()
+        self._set_controls_enabled(True)
+        self._gen_thread = None
