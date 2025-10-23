@@ -29,5 +29,18 @@
       "console": "integratedTerminal",
       "justMyCode": true
     }
+    ,
+    {
+      "name": "Sudoku: GUI",
+      "type": "python",
+      "request": "launch",
+      "module": "sudokutrainer.cli",
+      "args": ["gui"],
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "QT_QPA_PLATFORM": "windows:darkmode=2"
+      }
+    }
   ]
 }
