@@ -14,11 +14,17 @@ Highlights:
 ## Download and run (Windows)
 
 1) Download the latest release from:
-   https://github.com/Milenkhov/SudokuTrainer/releases
+	https://github.com/Milenkhov/SudokuTrainer/releases
 
-2) Extract `SudokuTrainer-<tag>-win64.zip` and double‑click `SudokuTrainer.exe`.
+Direct download links for v0.2.4:
+- EXE (single file): https://github.com/Milenkhov/SudokuTrainer/releases/download/v0.2.4/SudokuTrainer.exe
+- ZIP (contains EXE + checksum): https://github.com/Milenkhov/SudokuTrainer/releases/download/v0.2.4/SudokuTrainer-0.2.4-Windows-x64.zip
 
-- Single-file .exe may also be provided; if available, you can run it directly without extracting.
+2) Option A: Run the single-file EXE directly.
+
+3) Option B: Extract the ZIP and double‑click `SudokuTrainer.exe`.
+
+- The single-file .exe runs without extracting.
 - No Python required for the Windows build.
 
 ## Using the app
@@ -44,35 +50,36 @@ Note on Python 3.14 for developers: PySide6/PyInstaller availability may lag. Th
 
 - Releases include a Windows build. Download from:
 	https://github.com/Milenkhov/SudokuTrainer/releases
-- Preferred asset: `SudokuTrainer-<tag>-win64.zip` (extract and run). A single-file `.exe` may also be attached when available.
+- Preferred assets:
+  - Single-file EXE for quick run
+  - Or the ZIP: `SudokuTrainer-<tag>-Windows-x64.zip` (extract and run)
 
 ## Verify downloads (SHA256)
 
-To verify your download's integrity, compare its SHA256 hash against the official checksum file attached to the release.
+To verify your download's integrity, compare its SHA256 hash against the official checksum files attached to the release.
 
-- Checksum file for v0.2.3:
-	https://github.com/Milenkhov/SudokuTrainer/releases/download/v0.2.3/SudokuTrainer-v0.2.3-win64.sha256.txt
-- For newer versions, open the corresponding release and download the matching `.sha256.txt` file.
+Checksum files for v0.2.4:
+- EXE SHA256: https://github.com/Milenkhov/SudokuTrainer/releases/download/v0.2.4/SudokuTrainer.exe.sha256.txt
+- ZIP SHA256: https://github.com/Milenkhov/SudokuTrainer/releases/download/v0.2.4/SudokuTrainer-0.2.4-Windows-x64.zip.sha256.txt
 
 Windows PowerShell example:
 
 ```
 # From the folder where you downloaded the files
 Get-FileHash -Algorithm SHA256 .\SudokuTrainer.exe
-Get-FileHash -Algorithm SHA256 .\SudokuTrainer-v0.2.3-win64.zip
-Get-FileHash -Algorithm SHA256 .\SudokuTrainer-v0.2.3-win64.tar.gz
+Get-FileHash -Algorithm SHA256 .\SudokuTrainer-0.2.4-Windows-x64.zip
 
 # Compare each output Hash to the line for the same filename in the .sha256.txt file
 # (Two spaces separate the hash and filename in the checksum file.)
 ```
 
-Optional: quick boolean checks for all three files at once
+Optional: quick boolean checks for both files at once
 
 ```
-$checks = Get-Content .\SudokuTrainer-v0.2.3-win64.sha256.txt
-$files  = 'SudokuTrainer.exe','SudokuTrainer-v0.2.3-win64.zip','SudokuTrainer-v0.2.3-win64.tar.gz'
+$checks = Get-Content .\SudokuTrainer-0.2.4-Windows-x64.zip.sha256.txt
+$files  = 'SudokuTrainer.exe','SudokuTrainer-0.2.4-Windows-x64.zip'
 $files | ForEach-Object {
-	$expected = ($checks | Where-Object { $_ -match ("  " + [regex]::Escape($_) + '$') }) -replace '\s\s.*$',''
+	$expected = ($checks | Where-Object { $_ -match ("  " + [regex]::Escape($_) + '$') }) -replace '\\s\\s.*$',''
 	$actual   = (Get-FileHash -Algorithm SHA256 $_).Hash
 	'{0}: {1}' -f $_, ($actual -eq $expected)
 }
