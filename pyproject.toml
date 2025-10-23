@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sudokutrainer"
-version = "0.2.0"
+version = "0.2.3"
 description = "Text-based Sudoku trainer with generator, solver, and human-style hints."
 readme = "README.md"
 requires-python = ">=3.11"

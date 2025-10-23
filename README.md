@@ -1,6 +1,6 @@
 # SudokuTrainer
 
-Text-based Sudoku trainer with generator, solver, and human-style hints. Now with a GUI.
+Text-based Sudoku trainer with generator, solver, and human-style hints. Now with a GUI and Windows builds.
 
 Features:
 - Difficulty: Beginner, Easy, Medium, Hard, Expert
@@ -8,7 +8,7 @@ Features:
 - Solver: backtracking + human strategies
 - Hints: Naked Single, Hidden Single, Naked Pair, Hidden Pair, Eliminations
 - CLI: `sudoku` command
-- GUI: `sudoku gui` or run the packaged Windows build from Releases
+- GUI: `sudoku gui` or download the Windows build from Releases
 
 Quick start (uv):
 
@@ -33,6 +33,11 @@ sudoku hint
 sudoku solve --explain
 ```
 
+Quick start (Windows executable):
+
+- Download the latest `SudokuTrainer-<tag>-win64.zip` from Releases and run `SudokuTrainer.exe`.
+- No Python required.
+
 Troubleshooting:
 - Ensure Python 3.11+.
 - Run tests: `pytest -q`
@@ -42,9 +47,15 @@ Troubleshooting:
 
 - Run from CLI: `sudoku gui`
 - Or run as a module: `python -m sudokutrainer` (launches the GUI)
-- Windows builds are attached to GitHub Releases when tags are pushed (CI builds on Python 3.11).
+- Windows builds are attached to GitHub Releases when tags are pushed (CI builds on Python 3.12).
 
 Note on Python 3.14: PySide6 and PyInstaller may not be available yet. The project gates these dependencies on Python < 3.14 so installs succeed; use Python 3.11/3.12 locally for GUI development and packaging.
+
+## Releases
+
+- Each tag creates a Windows build artifact. Download from:
+	https://github.com/Milenkhov/SudokuTrainer/releases
+- Asset format: `SudokuTrainer-<tag>-win64.zip`
 
 ## VS Code
 

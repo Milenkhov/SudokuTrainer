@@ -9,3 +9,4 @@ coverage.xml
 dist/
 build/
 *.egg-info/
+tmp_cli.json
