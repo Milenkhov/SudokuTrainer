@@ -1,64 +1,89 @@
 # SudokuTrainer
 
-Text-based Sudoku trainer with generator, solver, and human-style hints. Now with a GUI and Windows builds.
+SudokuTrainer is a desktop Sudoku app for Windows. Generate puzzles, get human-style hints, and check your progress with one click.
 
-Features:
-- Difficulty: Beginner, Easy, Medium, Hard, Expert
-- Generator: uniqueness guaranteed, difficulty targeted
-- Solver: backtracking + human strategies
-- Hints: Naked Single, Hidden Single, Naked Pair, Hidden Pair, Eliminations
-- CLI: `sudoku` command
-- GUI: `sudoku gui` or download the Windows build from Releases
+Highlights:
+- Difficulty levels: Beginner, Easy, Medium, Hard, Expert
+- Generator with uniqueness guarantee and difficulty targeting
+- Human-style hints: Naked/Hidden Single, Naked Pair, eliminations
+- New: Check button to highlight correct/incorrect entries
+- New: Thick 3×3 grid lines for better readability (like a classic Sudoku)
+- New: View > Show Coordinates toggle (x,y) headers on/off
+- New: Non-blocking “New” (async generation) so the UI stays responsive
 
-Quick start (uv):
+## Download and run (Windows)
 
-```
-uv venv
-uv sync
-uv run sudoku new --level Medium
-uv run sudoku show
-uv run sudoku hint
-uv run sudoku solve --explain
-```
+1) Download the latest release from:
+   https://github.com/Milenkhov/SudokuTrainer/releases
 
-Quick start (pip):
+2) Extract `SudokuTrainer-<tag>-win64.zip` and double‑click `SudokuTrainer.exe`.
 
-```
-python -m venv .venv
-.\.venv\Scripts\activate
-pip install -e ".[dev]"
-sudoku new --level Medium
-sudoku show
-sudoku hint
-sudoku solve --explain
-```
+- Single-file .exe may also be provided; if available, you can run it directly without extracting.
+- No Python required for the Windows build.
 
-Quick start (Windows executable):
+## Using the app
 
-- Download the latest `SudokuTrainer-<tag>-win64.zip` from Releases and run `SudokuTrainer.exe`.
-- No Python required.
+- New: Choose difficulty and click "New" to generate a puzzle.
+- Type digits 1–9 into empty cells. You can make mistakes; the app won't block invalid entries.
+- View > Show Coordinates: Toggle row/column headers if you find them distracting.
+- Hint: Shows a logical hint when the board has no conflicts.
+- Check: Colors entries you added: green if correct, red if incorrect. Use it any time to assess progress.
+- Solve: Fills in the solution if you want to see the completed grid.
 
-Troubleshooting:
-- Ensure Python 3.11+.
-- Run tests: `pytest -q`
-- Lint: `ruff check .` and `black --check .` and `mypy .`
+### Quick rules (How to play)
 
-## GUI
+- Each row must contain digits 1–9 exactly once.
+- Each column must contain digits 1–9 exactly once.
+- Each 3×3 box must contain digits 1–9 exactly once.
 
-- Run from CLI: `sudoku gui`
-- Or run as a module: `python -m sudokutrainer` (launches the GUI)
-- Windows builds are attached to GitHub Releases when tags are pushed (CI builds on Python 3.12).
+Tips: Start with singles, use Check to assess progress, and ask for a Hint when there are no conflicts.
 
-Note on Python 3.14: PySide6 and PyInstaller may not be available yet. The project gates these dependencies on Python < 3.14 so installs succeed; use Python 3.11/3.12 locally for GUI development and packaging.
+Note on Python 3.14 for developers: PySide6/PyInstaller availability may lag. The project gates GUI deps on Python < 3.14; use Python 3.11/3.12 for development and packaging.
 
 ## Releases
 
-- Each tag creates a Windows build artifact. Download from:
+- Releases include a Windows build. Download from:
 	https://github.com/Milenkhov/SudokuTrainer/releases
-- Asset format: `SudokuTrainer-<tag>-win64.zip`
+- Preferred asset: `SudokuTrainer-<tag>-win64.zip` (extract and run). A single-file `.exe` may also be attached when available.
 
-## VS Code
+## Verify downloads (SHA256)
 
-- Use the provided launch configurations (CLI helpers). You can add a GUI launcher by running the CLI with args `gui`.
+To verify your download's integrity, compare its SHA256 hash against the official checksum file attached to the release.
+
+- Checksum file for v0.2.3:
+	https://github.com/Milenkhov/SudokuTrainer/releases/download/v0.2.3/SudokuTrainer-v0.2.3-win64.sha256.txt
+- For newer versions, open the corresponding release and download the matching `.sha256.txt` file.
+
+Windows PowerShell example:
+
+```
+# From the folder where you downloaded the files
+Get-FileHash -Algorithm SHA256 .\SudokuTrainer.exe
+Get-FileHash -Algorithm SHA256 .\SudokuTrainer-v0.2.3-win64.zip
+Get-FileHash -Algorithm SHA256 .\SudokuTrainer-v0.2.3-win64.tar.gz
+
+# Compare each output Hash to the line for the same filename in the .sha256.txt file
+# (Two spaces separate the hash and filename in the checksum file.)
+```
+
+Optional: quick boolean checks for all three files at once
+
+```
+$checks = Get-Content .\SudokuTrainer-v0.2.3-win64.sha256.txt
+$files  = 'SudokuTrainer.exe','SudokuTrainer-v0.2.3-win64.zip','SudokuTrainer-v0.2.3-win64.tar.gz'
+$files | ForEach-Object {
+	$expected = ($checks | Where-Object { $_ -match ("  " + [regex]::Escape($_) + '$') }) -replace '\s\s.*$',''
+	$actual   = (Get-FileHash -Algorithm SHA256 $_).Hash
+	'{0}: {1}' -f $_, ($actual -eq $expected)
+}
+```
+
+## Development
+
+- Requirements: Python 3.11 or 3.12.
+- Install: `python -m venv .venv && .\.venv\Scripts\activate && pip install -e ".[dev,gui]"`
+- Run the GUI: `python -m sudokutrainer`
+- Tests: `pytest -q`
+- Lint/format/typecheck: `ruff check . && black --check . && mypy .`
 
 License: MIT
