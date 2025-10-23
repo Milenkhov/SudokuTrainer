@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/launch.json",
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Sudoku: CLI (module)",
+      "type": "python",
+      "request": "launch",
+      "module": "sudokutrainer.cli",
+      "args": [],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Sudoku: New Medium",
+      "type": "python",
+      "request": "launch",
+      "module": "sudokutrainer.cli",
+      "args": ["new", "--level", "Medium"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Sudoku: Solve (explain)",
+      "type": "python",
+      "request": "launch",
+      "module": "sudokutrainer.cli",
+      "args": ["solve", "--explain"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

@@ -16,6 +16,15 @@ from .solver.rating import rate_board
 app = typer.Typer(help="Sudoku Trainer CLI")
 console = Console()
 _session: dict[str, Board] = {"board": Board.empty()}
+DEFAULT_SESSION = Path("tmp_cli.json")
+
+
+# Auto-load session if present
+if DEFAULT_SESSION.exists():
+    try:
+        _session["board"] = load_json_board(DEFAULT_SESSION)
+    except Exception:
+        pass
 
 
 def _get_board() -> Board:
@@ -26,6 +35,11 @@ def _get_board() -> Board:
 def new(level: str = typer.Option("Medium", "--level", "-l", help="Difficulty level")) -> None:
     b, rated = generate(level)
     _session["board"] = b
+    # persist session
+    try:
+        save_json_board(b, DEFAULT_SESSION)
+    except Exception:
+        pass
     console.print(f"Generated puzzle rated: [bold]{rated}[/bold]")
     show()
 
@@ -44,6 +58,10 @@ def show() -> None:
 def set_value(row: int, col: int, val: int) -> None:
     b = _get_board()
     b.set_cell(row - 1, col - 1, val)
+    try:
+        save_json_board(b, DEFAULT_SESSION)
+    except Exception:
+        pass
     console.print(f"Set ({row},{col}) = {val}")
     show()
 
@@ -70,6 +88,10 @@ def solve_cmd(explain: bool = typer.Option(False, "--explain")) -> None:
         console.print("Unsolvable.")
         return
     _session["board"] = solved
+    try:
+        save_json_board(solved, DEFAULT_SESSION)
+    except Exception:
+        pass
     console.print("Solved.")
     if explain:
         for s in steps[:50]:
@@ -90,12 +112,21 @@ def rate() -> None:
 @app.command("save")
 def save_cmd(path: Path) -> None:
     save_json_board(_get_board(), path)
+    # also persist default session
+    try:
+        save_json_board(_get_board(), DEFAULT_SESSION)
+    except Exception:
+        pass
     console.print(f"Saved to {path}")
 
 
 @app.command("load")
 def load_cmd(path: Path) -> None:
     _session["board"] = load_json_board(path)
+    try:
+        save_json_board(_get_board(), DEFAULT_SESSION)
+    except Exception:
+        pass
     console.print(f"Loaded {path}")
     show()
 
@@ -105,3 +136,8 @@ def tutorial() -> None:
     console.print("Tutorial:")
     console.print("- Start with Singles.")
     console.print("- Then look for Pairs and simple eliminations.")
+
+
+if __name__ == "__main__":
+    # Allow running via: python -m sudokutrainer.cli [COMMAND]
+    app()
