@@ -13,9 +13,6 @@ authors = [{ name = "Milenkhov" }]
 dependencies = [
   "typer>=0.12.3",
   "rich>=13.7.1",
-  # PySide6 is not yet available on Python 3.14 at the time of writing.
-  # Use an environment marker so local installs on 3.14 don't fail; CI builds use 3.11.
-  "pyside6>=6.7; python_version < \"3.14\"",
 ]
 
 [project.optional-dependencies]
@@ -28,6 +25,10 @@ dev = [
   "pre-commit>=3.8.0",
   # PyInstaller also lacks Python 3.14 wheels currently; gate similarly.
   "pyinstaller>=6.10.0; python_version < \"3.14\"",
+]
+gui = [
+  # Make GUI optional so CI on Linux doesn't need to install PySide6.
+  "pyside6>=6.7; python_version < \"3.14\"",
 ]
 
 [project.scripts]
